@@ -1,5 +1,9 @@
 # Bowling Simulator
 
+## Sources
+- [Basic Bowling Rules](https://www.thoughtco.com/bowling-scoring-420895)
+
+
 ## Bowl Scoring Basics
 - One game: 10 frames, score range 0 - 300, each frame has two chances to known down 10 pins
 

@@ -5,8 +5,15 @@
   "author": "Danh Nguyen",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "keywords": [],
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^24.1.0",
+    "mocha": "^6.0.2"
+  },
+  "dependencies": {
+    "chai": "^4.2.0"
+  }
 }
