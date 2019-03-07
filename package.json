@@ -5,7 +5,7 @@
   "author": "Danh Nguyen",
   "main": "index.js",
   "scripts": {
-    "test": "jest --no-cache ./*"
+    "test": "tap *.test.js"
   },
   "keywords": [],
   "license": "ISC",
@@ -13,6 +13,8 @@
     "jest": "^24.1.0"
   },
   "dependencies": {
-    "chalk": "^2.4.2"
+    "chalk": "^2.4.2",
+    "tap": "^12.6.0",
+    "text-table": "^0.2.0"
   }
 }

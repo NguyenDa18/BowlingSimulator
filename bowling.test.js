@@ -1,225 +1,276 @@
-const Bowling = require('./bowling');
+const tap = require('tap')
+const lib = require('./bowling')
 
-describe('Bowling', () => {
-  describe('Check game can be scored correctly.', () => {
-    test('should be able to score a game with all zeros', () => {
-      const rolls = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(bowling.score()).toEqual(0);
-    });
+tap.test('a complete game', function (t) {
+  var gm1 = ['81', '9-', '9/', '71', '9-', 'X', '90', '70', 'x', '7-']
+  var result = lib(gm1)
+  var expected = [
+    { outcome: '81', cumulative: 9, score: 9 },
+    { outcome: '9-', cumulative: 18, score: 9 },
+    { outcome: '9/', cumulative: 35, score: 17 },
+    { outcome: '71', cumulative: 43, score: 8 },
+    { outcome: '9-', cumulative: 52, score: 9 },
+    { outcome: 'X', cumulative: 71, score: 19 },
+    { outcome: '9-', cumulative: 80, score: 9 },
+    { outcome: '7-', cumulative: 87, score: 7 },
+    { outcome: 'X', cumulative: 104, score: 17 },
+    { outcome: '7-', cumulative: 111, score: 7 }
+  ]
+  t.deepEqual(result, expected)
+  t.end()
+})
 
-    test('should be able to score a game with no strikes or spares', () => {
-      const rolls = [3, 6, 3, 6, 3, 6, 3, 6, 3, 6, 3, 6, 3, 6, 3, 6, 3, 6, 3, 6];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(bowling.score()).toEqual(90);
-    });
+tap.test('a complete game with fouls', function (t) {
+  var gm1 = ['81', '9-', '9/', '71', '9f', 'X', '9F', '70', 'x', '7-']
+  var result = lib(gm1)
+  var expected = [
+    { outcome: '81', cumulative: 9, score: 9 },
+    { outcome: '9-', cumulative: 18, score: 9 },
+    { outcome: '9/', cumulative: 35, score: 17 },
+    { outcome: '71', cumulative: 43, score: 8 },
+    { outcome: '9F', cumulative: 52, score: 9 },
+    { outcome: 'X', cumulative: 71, score: 19 },
+    { outcome: '9F', cumulative: 80, score: 9 },
+    { outcome: '7-', cumulative: 87, score: 7 },
+    { outcome: 'X', cumulative: 104, score: 17 },
+    { outcome: '7-', cumulative: 111, score: 7 }
+  ]
+  t.deepEqual(result, expected)
+  t.end()
+})
 
-    test('a spare followed by zeros is worth ten points', () => {
-      const rolls = [6, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(bowling.score()).toEqual(10);
-    });
+tap.test('too many frames should throw', function (t) {
+  t.throws(function () {
+    lib(['81', '9-', '9/', '71', '9-', 'X', '90', '70', 'x', '7-', 'x'])
+  })
 
-    test('points scored in the roll after a spare are counted twice', () => {
-      const rolls = [6, 4, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(bowling.score()).toEqual(16);
-    });
+  t.end()
+})
 
-    test('consecutive spares each get a one roll bonus', () => {
-      const rolls = [5, 5, 3, 7, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(bowling.score()).toEqual(31);
-    });
+tap.test('invalid frame should throw', function (t) {
+  t.throws(function () {
+    lib(['78'])
+  })
 
-    test('a spare in the last frame gets a one roll bonus that is counted once', () => {
-      const rolls = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 3, 7];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(bowling.score()).toEqual(17);
-    });
+  t.throws(function () {
+    lib(['787'])
+  })
 
-    test('a strike earns ten points in a frame with a single roll', () => {
-      const rolls = [10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(bowling.score()).toEqual(10);
-    });
+  t.throws(function () {
+    lib([''])
+  })
 
-    test('points scored in the two rolls after a strike are counted twice as a bonus', () => {
-      const rolls = [10, 5, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(bowling.score()).toEqual(26);
-    });
+  t.throws(function () {
+    lib(['/9'])
+  })
 
-    test('consecutive strikes each get the two roll bonus', () => {
-      const rolls = [10, 10, 10, 5, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(bowling.score()).toEqual(81);
-    });
+  t.throws(function longFrame () {
+    lib(['78xx'])
+  })
 
-    test('a strike in the last frame gets a two roll bonues that is counted once', () => {
-      const rolls = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 7, 1];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(bowling.score()).toEqual(18);
-    });
+  t.end()
+})
 
-    test('rolling a spare with the two roll bonus does not get a bonus roll', () => {
-      const rolls = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 7, 3];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(bowling.score()).toEqual(20);
-    });
+tap.test('second complete game', function (t) {
+  var result = lib(['80', 'x', '1/', '7/', '90', '6-', 'x', '43', '62', '8/6'])
+  var expected = [
+    { outcome: '8-', cumulative: 8, score: 8 },
+    { outcome: 'X', cumulative: 28, score: 20 },
+    { outcome: '1/', cumulative: 45, score: 17 },
+    { outcome: '7/', cumulative: 64, score: 19 },
+    { outcome: '9-', cumulative: 73, score: 9 },
+    { outcome: '6-', cumulative: 79, score: 6 },
+    { outcome: 'X', cumulative: 96, score: 17 },
+    { outcome: '43', cumulative: 103, score: 7 },
+    { outcome: '62', cumulative: 111, score: 8 },
+    { outcome: '8/6', cumulative: 127, score: 16 }
+  ]
+  t.deepEqual(result, expected)
+  t.end()
+})
 
-    test('strikes with the two roll bonus do not get bonus rolls', () => {
-      const rolls = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10, 10];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(bowling.score()).toEqual(30);
-    });
+tap.test('strikeout to finish', function (t) {
+  var result = lib(['80', 'x', '1/', '7/', '90', '6-', 'x', '43', 'X', 'xxX'])
+  var expected = [
+    { outcome: '8-', cumulative: 8, score: 8 },
+    { outcome: 'X', cumulative: 28, score: 20 },
+    { outcome: '1/', cumulative: 45, score: 17 },
+    { outcome: '7/', cumulative: 64, score: 19 },
+    { outcome: '9-', cumulative: 73, score: 9 },
+    { outcome: '6-', cumulative: 79, score: 6 },
+    { outcome: 'X', cumulative: 96, score: 17 },
+    { outcome: '43', cumulative: 103, score: 7 },
+    { outcome: 'X', cumulative: 133, score: 30 },
+    { outcome: 'XXX', cumulative: 163, score: 30 }
+  ]
+  t.deepEqual(result, expected)
+  t.end()
+})
 
-    test('a strike with the one roll bonus after a spare in the last frame does not get a bonus', () => {
-      const rolls = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 3, 10];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(bowling.score()).toEqual(20);
-    });
+tap.test('an incomplete game', function (t) {
+  var result = lib(['80', 'x', '1/', '7/', '9'])
+  var expected = [
+    { outcome: '8-', cumulative: 8, score: 8 },
+    { outcome: 'X', cumulative: 28, score: 20 },
+    { outcome: '1/', cumulative: 45, score: 17 },
+    { outcome: '7/', cumulative: 64, score: 19 },
+    { outcome: '9', cumulative: 73, score: 9 }
+  ]
+  t.deepEqual(result, expected)
+  t.end()
+})
 
-    test('all strikes is a perfect game', () => {
-      const rolls = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(bowling.score()).toEqual(300);
-    });
-  });
+tap.test('did someone say "a perfect game"?', function (t) {
+  var result = lib(['x', 'x', 'x', 'X', 'x', 'X', 'X', 'X', 'X', 'xxX'])
+  var expected = [
+    { outcome: 'X', cumulative: 30, score: 30 },
+    { outcome: 'X', cumulative: 60, score: 30 },
+    { outcome: 'X', cumulative: 90, score: 30 },
+    { outcome: 'X', cumulative: 120, score: 30 },
+    { outcome: 'X', cumulative: 150, score: 30 },
+    { outcome: 'X', cumulative: 180, score: 30 },
+    { outcome: 'X', cumulative: 210, score: 30 },
+    { outcome: 'X', cumulative: 240, score: 30 },
+    { outcome: 'X', cumulative: 270, score: 30 },
+    { outcome: 'XXX', cumulative: 300, score: 30 }
+  ]
+  t.deepEqual(result, expected)
+  t.end()
+})
 
-  describe('Check game rules.', () => {
-    test('rolls can not score negative points', () => {
-      const bowling = new Bowling();
-      expect(() => { bowling.roll(-1); })
-        .toThrow(new Error('Negative roll is invalid'));
-    });
+tap.test('a complete game with all zero-spares', function (t) {
+  var gm1 = ['0/', '-/', '0/', '-/', '-/', '-/', '-/', '-/', '-/', '-/-']
+  var result = lib(gm1)
+  var expected = [
+    { outcome: '-/', cumulative: 10, score: 10 },
+    { outcome: '-/', cumulative: 20, score: 10 },
+    { outcome: '-/', cumulative: 30, score: 10 },
+    { outcome: '-/', cumulative: 40, score: 10 },
+    { outcome: '-/', cumulative: 50, score: 10 },
+    { outcome: '-/', cumulative: 60, score: 10 },
+    { outcome: '-/', cumulative: 70, score: 10 },
+    { outcome: '-/', cumulative: 80, score: 10 },
+    { outcome: '-/', cumulative: 90, score: 10 },
+    { outcome: '-/-', cumulative: 100, score: 10 }
+  ]
+  t.deepEqual(result, expected)
+  t.end()
+})
 
-    test('a roll can not score more than 10 points', () => {
-      const bowling = new Bowling();
-      expect(() => { bowling.roll(11); })
-        .toThrow(new Error('Pin count exceeds pins on the lane'));
-    });
+tap.test('zero frame', function (t) {
+  var gm1 = ['--']
+  var result = lib(gm1)
+  var expected = [
+    { outcome: '--', cumulative: 0, score: 0 }
+  ]
+  t.deepEqual(result, expected)
+  t.end()
+})
 
-    test('two rolls in a frame can not score more than 10 points', () => {
-      const bowling = new Bowling();
-      bowling.roll(5);
-      expect(() => { bowling.roll(6); })
-        .toThrow(new Error('Pin count exceeds pins on the lane'));
-    });
+tap.test('non-string frame', function (t) {
+  var gm1 = [13]
+  var result = lib(gm1)
+  var expected = [
+    { outcome: '13', cumulative: 4, score: 4 }
+  ]
+  t.deepEqual(result, expected)
+  t.end()
+})
 
-    test('bonus roll after a strike in the last frame cannot score more than 10 points', () => {
-      const rolls = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(() => { bowling.roll(11); })
-        .toThrow(new Error('Pin count exceeds pins on the lane'));
-    });
+tap.test('closed spare', function (t) {
+  var gm1 = ['--', '--', '3/', '9']
+  var result = lib(gm1)
+  var expected = [
+    { outcome: '--', cumulative: 0, score: 0 },
+    { outcome: '--', cumulative: 0, score: 0 },
+    { outcome: '3/', cumulative: 19, score: 19 },
+    { outcome: '9', cumulative: 28, score: 9 }
+  ]
+  t.deepEqual(result, expected)
+  t.end()
+})
 
-    test('two bonus rolls after a strike in the last frame can not score more than 10 points', () => {
-      const rolls = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 5];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(() => { bowling.roll(6); })
-        .toThrow(new Error('Pin count exceeds pins on the lane'));
-    });
+tap.test('open spare', function (t) {
+  var gm1 = ['--', '--', '3/']
+  var result = lib(gm1)
+  var expected = [
+    { outcome: '--', cumulative: 0, score: 0 },
+    { outcome: '--', cumulative: 0, score: 0 },
+    { outcome: '3/', cumulative: null, score: null }
+  ]
+  t.deepEqual(result, expected)
+  t.end()
+})
 
-    test('two bonus rolls after a strike in the last frame can score more than 10 points if one is a strike', () => {
-      const rolls = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10, 6];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(bowling.score()).toEqual(26);
-    });
+tap.test('finalize non-spare/non-strike', function (t) {
+  var gm1 = ['--', '--', '81']
+  var result = lib(gm1)
+  var expected = [
+    { outcome: '--', cumulative: 0, score: 0 },
+    { outcome: '--', cumulative: 0, score: 0 },
+    { outcome: '81', cumulative: 9, score: 9 }
+  ]
+  t.deepEqual(result, expected)
+  t.end()
+})
 
-    test('the second bonus rolls after a strike in the last frame can not be a strike if the first one is not a strike', () => {
-      const rolls = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 6];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(() => { bowling.roll(10); })
-        .toThrow(new Error('Pin count exceeds pins on the lane'));
-    });
+tap.test('10th frame double miss', function (t) {
+  var result = lib(['x', 'x', 'x', 'X', 'x', 'X', 'X', 'X', 'X', '00'])
+  var expected = [
+    { outcome: 'X', cumulative: 30, score: 30 },
+    { outcome: 'X', cumulative: 60, score: 30 },
+    { outcome: 'X', cumulative: 90, score: 30 },
+    { outcome: 'X', cumulative: 120, score: 30 },
+    { outcome: 'X', cumulative: 150, score: 30 },
+    { outcome: 'X', cumulative: 180, score: 30 },
+    { outcome: 'X', cumulative: 210, score: 30 },
+    { outcome: 'X', cumulative: 230, score: 20 },
+    { outcome: 'X', cumulative: 240, score: 10 },
+    { outcome: '--', cumulative: 240, score: 0 }
+  ]
+  t.deepEqual(result, expected)
+  t.end()
+})
 
-    test('second bonus roll after a strike in the last frame cannot score more than 10 points', () => {
-      const rolls = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(() => { bowling.roll(11); })
-        .toThrow(new Error('Pin count exceeds pins on the lane'));
-    });
+tap.test('10th frame in-progress: single strike', function (t) {
+  var result = lib(['x', 'x', 'x', 'X', 'x', 'X', 'X', 'X', 'X', 'x'])
+  var expected = [
+    { outcome: 'X', cumulative: 30, score: 30 },
+    { outcome: 'X', cumulative: 60, score: 30 },
+    { outcome: 'X', cumulative: 90, score: 30 },
+    { outcome: 'X', cumulative: 120, score: 30 },
+    { outcome: 'X', cumulative: 150, score: 30 },
+    { outcome: 'X', cumulative: 180, score: 30 },
+    { outcome: 'X', cumulative: 210, score: 30 },
+    { outcome: 'X', cumulative: 240, score: 30 },
+    { outcome: 'X', cumulative: null, score: null },
+    { outcome: 'X', cumulative: null, score: null }
+  ]
+  t.deepEqual(result, expected)
+  t.end()
+})
 
-    test('an unstarted game can not be scored', () => {
-      const bowling = new Bowling();
-      expect(() => { bowling.score(); })
-        .toThrow(new Error('Score cannot be taken until the end of the game'));
-    });
+tap.test('10th frame in-progress: double strike', function (t) {
+  var result = lib(['x', 'x', 'x', 'X', 'x', 'X', 'X', 'X', 'X', 'xX'])
+  var expected = [
+    { outcome: 'X', cumulative: 30, score: 30 },
+    { outcome: 'X', cumulative: 60, score: 30 },
+    { outcome: 'X', cumulative: 90, score: 30 },
+    { outcome: 'X', cumulative: 120, score: 30 },
+    { outcome: 'X', cumulative: 150, score: 30 },
+    { outcome: 'X', cumulative: 180, score: 30 },
+    { outcome: 'X', cumulative: 210, score: 30 },
+    { outcome: 'X', cumulative: 240, score: 30 },
+    { outcome: 'X', cumulative: 270, score: 30 },
+    { outcome: 'XX', cumulative: null, score: null }
+  ]
+  t.deepEqual(result, expected)
+  t.end()
+})
 
-    test('an incomplete game can not be scored', () => {
-      const rolls = [0, 0];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(() => { bowling.score(); })
-        .toThrow(new Error('Score cannot be taken until the end of the game'));
-    });
-
-    test('cannot roll if game already has ten frames', () => {
-      const rolls = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(() => { bowling.roll(0); })
-        .toThrow(new Error('Cannot roll after game is over'));
-    });
-
-    test('bonus rolls for a strike in the last frame must be rolled before score can be calculated', () => {
-      const rolls = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(() => { bowling.score(); })
-        .toThrow(new Error('Score cannot be taken until the end of the game'));
-    });
-
-    test('both bonus rolls for a strike in the last frame must be rolled before score can be calculated', () => {
-      const rolls = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(() => { bowling.score(); })
-        .toThrow(new Error('Score cannot be taken until the end of the game'));
-    });
-
-    test('bonus roll for a spare in the last frame must be rolled before score can be calculated', () => {
-      const rolls = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 3];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(() => { bowling.score(); })
-        .toThrow(new Error('Score cannot be taken until the end of the game'));
-    });
-
-    test(' cannot roll after bonus roll for spare', () => {
-      const rolls = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 3, 2];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(() => { bowling.roll(2); })
-        .toThrow(new Error('Cannot roll after game is over'));
-    });
-
-    test('cannot roll after bonus rolls for strike', () => {
-      const rolls = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 3, 2];
-      const bowling = new Bowling();
-      rolls.forEach((roll) => { bowling.roll(roll); });
-      expect(() => { bowling.roll(2); })
-        .toThrow(new Error('Cannot roll after game is over'));
-    });
-  });
-});
+tap.test('10th frame pattern miss should throw', function (t) {
+  t.throws(function () {
+    lib(['x', 'x', 'x', 'X', 'x', 'X', 'X', 'X', 'X', 'y'])
+  })
+  t.end()
+})
