@@ -8,8 +8,15 @@ const progression = []
 const args = process.argv.slice(2);
 
 const [playerName] = args
-if (/\d/.test(playerName) || playerName.indexOf('x') > -1 ) {
-  console.error('Name cannot have a number')
+if (playerName === undefined) {
+  console.error('Player name needed');
+  process.exit(0);
+}
+if (/\d/.test(playerName) || 
+  playerName.indexOf('x') > -1 && playerName.length < 2 || 
+  playerName.indexOf('/') > -1 &&playerName.length < 2
+  ) {
+  console.error('Invalid name: ' + playerName)
   process.exit(0)
 }
 args.shift();

@@ -16,6 +16,7 @@
 3. Check that image has been built: `docker images`
 4. Run the image: `docker run -p 49160:8080 <bowling>`
 5. All the unit tests will be run in a docker container :)
+6. If you want to run a game, comment out `CMD ["npm","test"]` on Dockerfile and uncomment the test user game CMD, then rebuild image and run container
 
 ## Sample Rolls Input: Just copy+paste like so: `node main.js Bob <sample rolls input>`
 1. 81 9- 9/ 71 9- x 90 70 x 71

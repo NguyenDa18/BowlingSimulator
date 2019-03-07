@@ -1,7 +1,7 @@
 FROM node:8
-WORKDIR /us/src/bowling
+WORKDIR /usr/src/bowling
 COPY package*.json ./
 RUN npm install
 COPY . .
-EXPOSE 8080
 CMD ["npm","test"]
+# CMD ["node","main.js","Lara","2/","6-","53","X"]
