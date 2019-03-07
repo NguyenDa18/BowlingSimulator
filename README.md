@@ -10,12 +10,21 @@
 3. To run main CLI program: `node main.js <player name> <rolls>`
 4. To run unit tests: `npm test`
 
+## Running with Docker
+1. Make sure you have Docker installed
+2. Run `docker build -t <bowling> .`
+3. Check that image has been built: `docker images`
+4. Run the image: `docker run -p 49160:8080 <bowling>`
+5. All the unit tests will be run in a docker container :)
+
 ## Sample Rolls Input: Just copy+paste like so: `node main.js Bob <sample rolls input>`
 1. 81 9- 9/ 71 9- x 90 70 x 71
 2. x x x x x x x x x xxX (Perfect game)
 3. x 7/
 4. 23
 5. 3/ x 6
+
+# Bowling Info
 
 ## Bowl Scoring Basics
 - One game: 10 frames, score range 0 - 300, each frame has two chances to known down 10 pins
