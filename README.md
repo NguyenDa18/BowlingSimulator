@@ -2,6 +2,20 @@
 
 ## Sources
 - [Basic Bowling Rules](https://www.thoughtco.com/bowling-scoring-420895)
+- [Node Bowling](https://www.npmjs.com/package/bowling)
+
+## Running
+1. Install NodeJS and NPM if you don't already have it on your system
+2. Run `npm i` or `npm install`
+3. To run main CLI program: `node main.js <player name> <rolls>`
+4. To run unit tests: `npm test`
+
+## Sample Rolls Input: Just copy+paste like so: `node main.js Bob <sample rolls input>`
+1. 81 9- 9/ 71 9- x 90 70 x 71
+2. x x x x x x x x x x
+3. x 7/
+4. 23
+5. 3/ x 6
 
 ## Bowl Scoring Basics
 - One game: 10 frames, score range 0 - 300, each frame has two chances to known down 10 pins
