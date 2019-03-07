@@ -133,7 +133,6 @@ function attemptFrameFinalize (frame, leadingFrames) {
 
 function parseGame (game) {
   let scoresheet = []
-
   if (game.length > 10) throw new Error('too many frames')
 
   for (let i = 0; i < game.length; i++) {

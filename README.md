@@ -12,7 +12,7 @@
 
 ## Sample Rolls Input: Just copy+paste like so: `node main.js Bob <sample rolls input>`
 1. 81 9- 9/ 71 9- x 90 70 x 71
-2. x x x x x x x x x x
+2. x x x x x x x x x xxX (Perfect game)
 3. x 7/
 4. 23
 5. 3/ x 6
