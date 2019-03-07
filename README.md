@@ -4,6 +4,9 @@
 - [Basic Bowling Rules](https://www.thoughtco.com/bowling-scoring-420895)
 - [Node Bowling](https://www.npmjs.com/package/bowling)
 
+## Video Demo
+- [Demo of running program](https://drive.google.com/file/d/1wEYGufpnLFSb_AD_jJxx6GW5tRyhZRJQ/view)
+
 ## Running
 1. Install NodeJS and NPM if you don't already have it on your system
 2. Run `npm i` or `npm install`
