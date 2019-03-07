@@ -1,6 +1,7 @@
-FROM node:7
-WORKDIR /bowling
-COPY package.json /bowling
+FROM node:8
+WORKDIR /us/src/bowling
+COPY package*.json ./
 RUN npm install
-COPY ./bowling
-CMD npm test
+COPY . .
+EXPOSE 8080
+CMD ["npm","test"]
