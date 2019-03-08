@@ -4,6 +4,9 @@ const tenthPattern = new RegExp('^[XF0-9-]{1}[XF0-9-/]?[XF0-9-/]?$', 'i')
 const basicPattern = new RegExp('^[XF0-9-]{1}[F0-9-/]?$', 'i')
 const zeroEquiv = new RegExp('[F-]', 'g')
 
+/**
+ * FUNCTIONS ALL HANDLE FORMATTING AND PARSING
+ */
 function validateFrame (frame, isTenthFrame) {
   if (frame.length === 0) {
     throw new Error('frame must not be empty: ' + frame)
@@ -21,8 +24,8 @@ function validateFrame (frame, isTenthFrame) {
 function parseFrame (result) {
   if (typeof result !== 'string') result = result + ''
 
-  result = result.replace(/0/g, '-')
-  result = result.toUpperCase()
+  // handle case of users typing zero for misses
+  result = result.replace(/0/g, '-').toUpperCase()
   return result
 }
 
@@ -37,7 +40,9 @@ function scoreFrame (frame) {
 
   if (isStrike(frame) || isSpare(frame)) {
     score = null
-  } else {
+  } 
+  else {
+    // replace dashes for foul balls with 0
     const addable = frame.replace(zeroEquiv, '0')
     score = 0
     for (let c = 0; c < addable.length; c++) {
@@ -72,7 +77,13 @@ function getRollScores (frames) {
 
   return rollScores
 }
+/** END OF FORMATTING AND PARSING FUNCTIONS */
 
+/**
+ * BOWLING GAME LOGIC
+ */
+
+// Handle current total score during game
 function updateCumulatives (scoresheet) {
   let cumulative = 0
   for (let f = 0; f < scoresheet.length; f++) {
@@ -90,7 +101,8 @@ function scoreTenthFrame (frame) {
 
   if (frame.length === 3) {
     isFinal = true
-  } else if (frame.length === 2 && frame[1] !== 'X' && frame[1] !== '/') {
+  } 
+  else if (frame.length === 2 && frame[1] !== 'X' && frame[1] !== '/') {
     isFinal = true
   }
 
@@ -139,7 +151,8 @@ function parseGame (game) {
     const isTenthFrame = i === 9
     const notFirstFrame = i > 0
     const notFirstTwoFrames = i > 1
-    const cleanOutcome = parseFrame(game[i], isTenthFrame)
+    const cleanOutcome = parseFrame(game[i])
+    let prevFrame, leadingFrames
 
     validateFrame(cleanOutcome, isTenthFrame)
 
@@ -148,8 +161,6 @@ function parseGame (game) {
       cumulative: null,
       score: scoreFrame(cleanOutcome)
     }
-
-    let prevFrame, leadingFrames
 
     if (notFirstFrame) {
       prevFrame = scoresheet[i - 1]
